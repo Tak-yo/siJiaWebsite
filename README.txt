@@ -1,0 +1,1 @@
+Making a website for my non-Korean girlfriend
