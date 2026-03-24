@@ -1,376 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flash Cards</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --panel: rgba(255,255,255,0.08);
-      --panel-border: rgba(255,255,255,0.14);
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --shadow: 0 20px 50px rgba(0,0,0,0.35);
-      --radius: 24px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards</title>
 
-    * { box-sizing: border-box; }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 20px;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(168,85,247,0.16), transparent 24%),
-        var(--bg);
-      color: var(--text);
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
+.card {
+  width: 400px;
+  height: 250px;
+  perspective: 1000px;
+  cursor: pointer;
+}
 
-    .app {
-      width: min(920px, 100%);
-      display: grid;
-      gap: 20px;
-    }
+.inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
+.flipped {
+  transform: rotateY(180deg);
+}
 
-    .title-wrap h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      line-height: 1.05;
-    }
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border-radius: 12px;
+  backface-visibility: hidden;
+}
 
-    .title-wrap p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 0.98rem;
-    }
+.front {
+  background: #1e293b;
+}
 
-    .counter {
-      padding: 10px 14px;
-      border: 1px solid var(--panel-border);
-      background: var(--panel);
-      backdrop-filter: blur(12px);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 0.95rem;
-      white-space: nowrap;
-    }
+.back {
+  background: #38bdf8;
+  transform: rotateY(180deg);
+}
 
-    .viewer {
-      border: 1px solid var(--panel-border);
-      background: var(--panel);
-      backdrop-filter: blur(12px);
-      border-radius: 32px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
+.controls {
+  margin-top: 20px;
+}
 
-    .card-stage {
-      perspective: 1400px;
-      width: 100%;
-      min-height: 460px;
-      display: grid;
-      place-items: center;
-    }
-
-    .flashcard {
-      width: min(720px, 100%);
-      aspect-ratio: 16 / 10;
-      position: relative;
-      cursor: pointer;
-      transform-style: preserve-3d;
-      transition: transform 0.7s cubic-bezier(.2,.8,.2,1);
-      outline: none;
-    }
-
-    .flashcard.flipped {
-      transform: rotateY(180deg);
-    }
-
-    .face {
-      position: absolute;
-      inset: 0;
-      border-radius: var(--radius);
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: clamp(20px, 4vw, 34px);
-      border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-      overflow: hidden;
-    }
-
-    .face::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top right, rgba(56,189,248,0.16), transparent 25%);
-      pointer-events: none;
-    }
-
-    .back {
-      transform: rotateY(180deg);
-      background: linear-gradient(160deg, rgba(56,189,248,0.10), rgba(255,255,255,0.04));
-    }
-
-    .label {
-      position: relative;
-      z-index: 1;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      font-size: clamp(1.4rem, 2.3vw, 2.2rem);
-      line-height: 1.25;
-      font-weight: 700;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      flex: 1;
-      padding: 12px 0;
-    }
-
-    .hint {
-      position: relative;
-      z-index: 1;
-      color: var(--muted);
-      font-size: 0.95rem;
-      text-align: center;
-    }
-
-    .controls {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      border: 1px solid var(--panel-border);
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 12px 18px;
-      font: inherit;
-      cursor: pointer;
-      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
-    }
-
-    button:hover,
-    button:focus-visible {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.13);
-      border-color: rgba(255,255,255,0.22);
-      outline: none;
-    }
-
-    .nav-btn {
-      min-width: 52px;
-      min-height: 52px;
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .flip-btn {
-      min-width: 130px;
-    }
-
-    .dots {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 18px;
-      flex-wrap: wrap;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 0;
-      padding: 0;
-      background: rgba(255,255,255,0.22);
-    }
-
-    .dot.active {
-      background: var(--accent);
-      transform: scale(1.15);
-    }
-
-    .footer-note {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    @media (max-width: 640px) {
-      .viewer { padding: 16px; border-radius: 24px; }
-      .card-stage { min-height: 340px; }
-      .flashcard { aspect-ratio: 4 / 5; }
-      .content { font-size: clamp(1.2rem, 5vw, 1.8rem); }
-      .controls { gap: 10px; }
-    }
-  </style>
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
-  <main class="app">
-    <div class="header">
-      <div class="title-wrap">
-        <h1>Flash Card Deck</h1>
-        <p>Click the card to flip it. Use the arrows or your keyboard to move through the deck.</p>
-      </div>
-      <div class="counter" id="counter">1 / 5</div>
-    </div>
 
-    <section class="viewer">
-      <div class="card-stage">
-        <div class="flashcard" id="flashcard" tabindex="0" aria-label="Flashcard. Click to flip.">
-          <article class="face front">
-            <div class="label">Front</div>
-            <div class="content" id="frontText"></div>
-            <div class="hint">Click card to reveal answer</div>
-          </article>
-          <article class="face back">
-            <div class="label">Back</div>
-            <div class="content" id="backText"></div>
-            <div class="hint">Click card to flip back</div>
-          </article>
-        </div>
-      </div>
+<h1>Flashcards</h1>
 
-      <div class="controls">
-        <button class="nav-btn" id="prevBtn" aria-label="Previous card">←</button>
-        <button class="flip-btn" id="flipBtn">Flip card</button>
-        <button class="nav-btn" id="nextBtn" aria-label="Next card">→</button>
-      </div>
+<div class="card" id="card">
+  <div class="inner" id="inner">
+    <div class="face front" id="front"></div>
+    <div class="face back" id="back"></div>
+  </div>
+</div>
 
-      <div class="dots" id="dots"></div>
-    </section>
+<div class="controls">
+  <button onclick="prevCard()">←</button>
+  <button onclick="flipCard()">Flip</button>
+  <button onclick="nextCard()">→</button>
+</div>
 
-    <div class="footer-note">Tip: Left/right arrows move cards, space or enter flips the current card.</div>
-  </main>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-  <script>
-    const cards = [
-      {
-        front: "What is the capital of Japan?",
-        back: "Tokyo"
-      },
-      {
-        front: "What does HTML stand for?",
-        back: "HyperText Markup Language"
-      },
-      {
-        front: "What is 9 × 7?",
-        back: "63"
-      },
-      {
-        front: "Who wrote '1984'?",
-        back: "George Orwell"
-      },
-      {
-        front: "What is the chemical symbol for gold?",
-        back: "Au"
-      }
-    ];
+<script>
+let cards = [];
+let index = 0;
+let flipped = false;
 
-    let currentIndex = 0;
-    let flipped = false;
+// LOAD EXCEL FROM REPO
+async function loadExcel() {
+  const res = await fetch('data/flashcards.xlsx');
+  const buffer = await res.arrayBuffer();
 
-    const flashcard = document.getElementById('flashcard');
-    const frontText = document.getElementById('frontText');
-    const backText = document.getElementById('backText');
-    const counter = document.getElementById('counter');
-    const dots = document.getElementById('dots');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const flipBtn = document.getElementById('flipBtn');
+  const workbook = XLSX.read(buffer);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const json = XLSX.utils.sheet_to_json(sheet);
 
-    function renderDots() {
-      dots.innerHTML = '';
-      cards.forEach((_, index) => {
-        const dot = document.createElement('button');
-        dot.className = `dot ${index === currentIndex ? 'active' : ''}`;
-        dot.setAttribute('aria-label', `Go to card ${index + 1}`);
-        dot.addEventListener('click', () => {
-          currentIndex = index;
-          flipped = false;
-          renderCard();
-        });
-        dots.appendChild(dot);
-      });
-    }
+  cards = json.map(row => ({
+    front: row.Front || row.front,
+    back: row.Back || row.back
+  }));
 
-    function renderCard() {
-      const card = cards[currentIndex];
-      frontText.textContent = card.front;
-      backText.textContent = card.back;
-      counter.textContent = `${currentIndex + 1} / ${cards.length}`;
-      flashcard.classList.toggle('flipped', flipped);
-      flipBtn.textContent = flipped ? 'Show front' : 'Flip card';
-      renderDots();
-    }
+  showCard();
+}
 
-    function toggleFlip() {
-      flipped = !flipped;
-      renderCard();
-    }
+// DISPLAY CARD
+function showCard() {
+  if (cards.length === 0) return;
 
-    function goToNext() {
-      currentIndex = (currentIndex + 1) % cards.length;
-      flipped = false;
-      renderCard();
-    }
+  document.getElementById("front").textContent = cards[index].front;
+  document.getElementById("back").textContent = cards[index].back;
 
-    function goToPrev() {
-      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-      flipped = false;
-      renderCard();
-    }
+  flipped = false;
+  document.getElementById("inner").classList.remove("flipped");
+}
 
-    flashcard.addEventListener('click', toggleFlip);
-    flipBtn.addEventListener('click', toggleFlip);
-    nextBtn.addEventListener('click', goToNext);
-    prevBtn.addEventListener('click', goToPrev);
+// FLIP CARD
+function flipCard() {
+  flipped = !flipped;
+  document.getElementById("inner").classList.toggle("flipped");
+}
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') {
-        goToNext();
-      } else if (event.key === 'ArrowLeft') {
-        goToPrev();
-      } else if (event.key === ' ' || event.key === 'Enter') {
-        if (document.activeElement === flashcard || document.activeElement === document.body || document.activeElement === flipBtn) {
-          event.preventDefault();
-          toggleFlip();
-        }
-      }
-    });
+// NAVIGATION
+function nextCard() {
+  index = (index + 1) % cards.length;
+  showCard();
+}
 
-    renderCard();
-  </script>
+function prevCard() {
+  index = (index - 1 + cards.length) % cards.length;
+  showCard();
+}
+
+// CLICK TO FLIP
+document.getElementById("card").addEventListener("click", flipCard);
+
+// KEYBOARD CONTROLS
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") nextCard();
+  if (e.key === "ArrowLeft") prevCard();
+  if (e.key === " ") flipCard();
+});
+
+// START
+loadExcel();
+</script>
+
 </body>
 </html>
