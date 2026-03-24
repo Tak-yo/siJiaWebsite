@@ -56,17 +56,6 @@ body {
   opacity: 0.3;
 }
 
-/* GLARE */
-.glare {
-  position: absolute;
-  inset: 0;
-  border-radius: 5px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 2;
-}
-
 /* INNER */
 .inner {
   width: 100%;
@@ -142,7 +131,6 @@ button:hover {
 <div class="card" id="card">
   <div class="stack stack-2"></div>
   <div class="stack stack-1"></div>
-  <div class="glare" id="glare"></div>
 
   <div class="inner" id="inner">
     <div class="face front">
@@ -155,9 +143,9 @@ button:hover {
 </div>
 
 <div class="controls">
-  <button onclick="prevCard()">←</button>
+  <button onclick="swipeRight()">←</button>
   <button onclick="flipCard()">Flip</button>
-  <button onclick="nextCard()">→</button>
+  <button onclick="swipeLeft()">→</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -215,7 +203,6 @@ let startX = 0, startY = 0;
 let currentX = 0, currentY = 0;
 let dragging = false;
 const card = document.getElementById("card");
-const glare = document.getElementById("glare");
 const inner = document.getElementById("inner");
 
 card.addEventListener("touchstart", e => {
@@ -321,20 +308,6 @@ function reset(skip=false) {
   card.style.transition = skip ? "none" : "0.3s";
   card.style.transform = "translateX(0) rotate(0)";
 }
-
-/* LIGHTING */
-card.addEventListener("mousemove", e => {
-  const rect = card.getBoundingClientRect();
-  let x = (e.clientX - rect.left)/rect.width;
-  let y = (e.clientY - rect.top)/rect.height;
-
-  glare.style.opacity = 1;
-  glare.style.background = `radial-gradient(circle at ${x*100}% ${y*100}%, rgba(255,255,255,0.12), transparent 70%)`;
-});
-
-card.addEventListener("mouseleave", () => {
-  glare.style.opacity = 0;
-});
 
 /* KEYBOARD */
 document.addEventListener("keydown", e => {
