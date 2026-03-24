@@ -25,23 +25,73 @@ body {
 }
 
 .card {
-  width: 500px;
-  height: 300px;
-  perspective: 1000px;
-  margin: 40px auto 60px auto;
+  width: 400px;
+  height: 250px;
+  perspective: 1200px; /* deeper 3D */
   cursor: pointer;
 }
+
 
 .inner {
   width: 100%;
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.flipped {
+.card {
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+
+.inner.flipped {
   transform: rotateY(180deg);
+}
+
+.spring-next-out {
+  animation: springNextOut 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+}
+
+.spring-prev-out {
+  animation: springPrevOut 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+}
+
+.spring-next-in {
+  animation: springNextIn 0.55s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+}
+
+.spring-prev-in {
+  animation: springPrevIn 0.55s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
+}
+
+@keyframes springNextOut {
+  0%   { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
+  35%  { transform: translateX(40px) scale(0.98) rotateY(6deg); opacity: 0.9; }
+  100% { transform: translateX(520px) scale(0.9) rotateY(18deg); opacity: 0; }
+}
+
+@keyframes springPrevOut {
+  0%   { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
+  35%  { transform: translateX(-40px) scale(0.98) rotateY(-6deg); opacity: 0.9; }
+  100% { transform: translateX(-520px) scale(0.9) rotateY(-18deg); opacity: 0; }
+}
+
+@keyframes springNextIn {
+  0%   { transform: translateX(-520px) scale(0.9) rotateY(-18deg); opacity: 0; }
+  60%  { transform: translateX(18px) scale(1.02) rotateY(2deg); opacity: 1; }
+  100% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
+}
+
+@keyframes springPrevIn {
+  0%   { transform: translateX(520px) scale(0.9) rotateY(18deg); opacity: 0; }
+  60%  { transform: translateX(-18px) scale(1.02) rotateY(-2deg); opacity: 1; }
+  100% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
 }
 
 .face {
@@ -52,7 +102,11 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
+
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;   /* ← CRITICAL FIX */
+
+  transform-style: preserve-3d;          /* ← ALSO IMPORTANT */
 }
 
 .content {
@@ -74,6 +128,8 @@ body {
 
 .controls {
   margin-top: 20px;
+  display: flex;
+  gap: 10px;
 }
 
 button {
@@ -81,7 +137,29 @@ button {
   margin: 5px;
   font-size: 16px;
   cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: #a855f7;
+  color: #0f172a;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
 }
+
+button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  background: #EDC001;
+}
+
+button:active {
+  transform: scale(0.92);
+  filter: brightness(0.95);
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+}
+
+
+/* Body */
+
 </style>
 </head>
 
@@ -149,14 +227,66 @@ function flipCard() {
 }
 
 // NAVIGATION
+let animating = false;
+
 function nextCard() {
-  index = (index + 1) % cards.length;
-  showCard();
+  if (animating || cards.length === 0) return;
+  animating = true;
+
+  const inner = document.getElementById("inner");
+  inner.classList.remove("spring-next-in", "spring-prev-in", "spring-prev-out");
+  inner.classList.add("spring-next-out");
+
+  setTimeout(() => {
+    index = (index + 1) % cards.length;
+    showCard();
+
+    inner.classList.remove("spring-next-out");
+    inner.classList.add("spring-next-in");
+
+    setTimeout(() => {
+      inner.classList.remove("spring-next-in");
+      animating = false;
+    }, 550);
+  }, 500);
 }
 
 function prevCard() {
-  index = (index - 1 + cards.length) % cards.length;
-  showCard();
+  if (animating || cards.length === 0) return;
+  animating = true;
+
+  const inner = document.getElementById("inner");
+  inner.classList.remove("spring-prev-in", "spring-next-in", "spring-next-out");
+  inner.classList.add("spring-prev-out");
+
+  setTimeout(() => {
+    index = (index - 1 + cards.length) % cards.length;
+    showCard();
+
+    inner.classList.remove("spring-prev-out");
+    inner.classList.add("spring-prev-in");
+
+    setTimeout(() => {
+      inner.classList.remove("spring-prev-in");
+      animating = false;
+    }, 550);
+  }, 500);
+}
+
+function showCard() {
+  if (cards.length === 0) return;
+
+  document.getElementById("front").textContent = cards[index].front;
+  document.getElementById("back").textContent = cards[index].back;
+
+  flipped = false;
+  document.getElementById("inner").classList.remove("flipped");
+}
+
+function flipCard() {
+  if (animating) return;
+  flipped = !flipped;
+  document.getElementById("inner").classList.toggle("flipped", flipped);
 }
 
 // CLICK TO FLIP
