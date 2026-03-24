@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy 1 Month </title>
+<title>Flashcards</title>
 
 <style>
 body {
-  font-family: "Comic Sans MS", "Comic Sans", fantasy;
+  font-family: "Comic Sans MS", cursive;
   background: #0f172a;
   color: white;
   display: flex;
@@ -17,115 +17,103 @@ body {
   padding: 20px;
 }
 
+/* TITLE */
 .title-img {
-  display: block;
   margin: 40px auto 60px auto;
   width: 350px;
   max-width: 90%;
 }
 
+/* CARD */
 .card {
   width: 400px;
   height: 250px;
-  perspective: 1200px; /* deeper 3D */
-  cursor: pointer;
+  perspective: 1400px;
+  position: relative;
+  transform-style: preserve-3d;
+  touch-action: none;
 }
 
+/* STACK */
+.stack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
 
+.stack-1 {
+  transform: translateY(8px) scale(0.98);
+  opacity: 0.6;
+}
+
+.stack-2 {
+  transform: translateY(16px) scale(0.96);
+  opacity: 0.3;
+}
+
+/* GLARE */
+.glare {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+
+/* INNER */
 .inner {
   width: 100%;
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.card {
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
 }
 
 .inner.flipped {
   transform: rotateY(180deg);
 }
 
-.spring-next-out {
-  animation: springNextOut 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
-}
-
-.spring-prev-out {
-  animation: springPrevOut 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
-}
-
-.spring-next-in {
-  animation: springNextIn 0.55s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
-}
-
-.spring-prev-in {
-  animation: springPrevIn 0.55s cubic-bezier(0.22, 1.2, 0.36, 1) forwards;
-}
-
-@keyframes springNextOut {
-  0%   { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
-  35%  { transform: translateX(40px) scale(0.98) rotateY(6deg); opacity: 0.9; }
-  100% { transform: translateX(520px) scale(0.9) rotateY(18deg); opacity: 0; }
-}
-
-@keyframes springPrevOut {
-  0%   { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
-  35%  { transform: translateX(-40px) scale(0.98) rotateY(-6deg); opacity: 0.9; }
-  100% { transform: translateX(-520px) scale(0.9) rotateY(-18deg); opacity: 0; }
-}
-
-@keyframes springNextIn {
-  0%   { transform: translateX(-520px) scale(0.9) rotateY(-18deg); opacity: 0; }
-  60%  { transform: translateX(18px) scale(1.02) rotateY(2deg); opacity: 1; }
-  100% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
-}
-
-@keyframes springPrevIn {
-  0%   { transform: translateX(520px) scale(0.9) rotateY(18deg); opacity: 0; }
-  60%  { transform: translateX(-18px) scale(1.02) rotateY(-2deg); opacity: 1; }
-  100% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
-}
-
+/* FACES */
 .face {
   position: absolute;
   width: 100%;
   height: 100%;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
 
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;   /* ← CRITICAL FIX */
+  -webkit-backface-visibility: hidden;
 
-  transform-style: preserve-3d;          /* ← ALSO IMPORTANT */
-}
-
-.content {
-  font-size: clamp(30px, 3vw, 36px);
-  padding: 25px;
-  text-align: center;
-  max-width: 400px; /*clamp max width of text*/
-  line-height: 1.5;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 .front {
-  background: #3c4324;
+  background: linear-gradient(145deg, #3c4324, #2c311a);
 }
 
 .back {
-  background: #EDC001;
+  background: linear-gradient(145deg, #EDC001, #caa300);
   transform: rotateY(180deg);
 }
 
+/* TEXT */
+.content {
+  font-size: clamp(26px, 3vw, 34px);
+  padding: 25px;
+  text-align: center;
+  max-width: 90%;
+}
+
+/* BUTTONS */
 .controls {
   margin-top: 20px;
   display: flex;
@@ -134,48 +122,35 @@ body {
 
 button {
   padding: 10px 20px;
-  margin: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
   border-radius: 8px;
+  border: none;
   background: #a855f7;
-  color: #0f172a;
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  color: black;
+  cursor: pointer;
 }
 
 button:hover {
-  transform: scale(1.05);
-  filter: brightness(1.1);
   background: #EDC001;
 }
-
-button:active {
-  transform: scale(0.92);
-  filter: brightness(0.95);
-  box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
-}
-
-
-/* Body */
-
 </style>
 </head>
 
 <body>
 
-<img src="SJ Name Asset.png" alt="Name" class="title-img">
+<img src="SJ Name Asset.png" class="title-img">
 
 <div class="card" id="card">
+  <div class="stack stack-2"></div>
+  <div class="stack stack-1"></div>
+  <div class="glare" id="glare"></div>
+
   <div class="inner" id="inner">
     <div class="face front">
-  <div class="content" id="front"></div>
-</div>
-
-<div class="face back">
-  <div class="content" id="back"></div>
-</div>
+      <div class="content" id="front"></div>
+    </div>
+    <div class="face back">
+      <div class="content" id="back"></div>
+    </div>
   </div>
 </div>
 
@@ -192,7 +167,7 @@ let cards = [];
 let index = 0;
 let flipped = false;
 
-// LOAD EXCEL FROM REPO
+/* LOAD EXCEL */
 async function loadExcel() {
   const res = await fetch('data/flashcards.xlsx');
   const buffer = await res.arrayBuffer();
@@ -201,105 +176,177 @@ async function loadExcel() {
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const json = XLSX.utils.sheet_to_json(sheet);
 
-  cards = json.map(row => ({
-    front: row.Front || row.front,
-    back: row.Back || row.back
+  cards = json.map(r => ({
+    front: r.Front,
+    back: r.Back
   }));
 
   showCard();
 }
 
-// DISPLAY CARD
+/* DISPLAY */
 function showCard() {
-  if (cards.length === 0) return;
-
   document.getElementById("front").textContent = cards[index].front;
   document.getElementById("back").textContent = cards[index].back;
 
   flipped = false;
-  document.getElementById("inner").classList.remove("flipped");
+  inner.classList.remove("flipped");
 }
 
-// FLIP CARD
+/* FLIP */
 function flipCard() {
   flipped = !flipped;
-  document.getElementById("inner").classList.toggle("flipped");
+  inner.classList.toggle("flipped");
 }
 
-// NAVIGATION
-let animating = false;
-
+/* NAV */
 function nextCard() {
-  if (animating || cards.length === 0) return;
-  animating = true;
-
-  const inner = document.getElementById("inner");
-  inner.classList.remove("spring-next-in", "spring-prev-in", "spring-prev-out");
-  inner.classList.add("spring-next-out");
-
-  setTimeout(() => {
-    index = (index + 1) % cards.length;
-    showCard();
-
-    inner.classList.remove("spring-next-out");
-    inner.classList.add("spring-next-in");
-
-    setTimeout(() => {
-      inner.classList.remove("spring-next-in");
-      animating = false;
-    }, 550);
-  }, 500);
+  index = (index + 1) % cards.length;
+  showCard();
 }
 
 function prevCard() {
-  if (animating || cards.length === 0) return;
-  animating = true;
+  index = (index - 1 + cards.length) % cards.length;
+  showCard();
+}
 
-  const inner = document.getElementById("inner");
-  inner.classList.remove("spring-prev-in", "spring-next-in", "spring-next-out");
-  inner.classList.add("spring-prev-out");
+/* SWIPE */
+let startX = 0, startY = 0;
+let currentX = 0, currentY = 0;
+let dragging = false;
+const card = document.getElementById("card");
+const glare = document.getElementById("glare");
+const inner = document.getElementById("inner");
+
+card.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+  dragging = true;
+});
+
+card.addEventListener("touchmove", e => {
+  if (!dragging) return;
+
+  currentX = e.touches[0].clientX;
+  currentY = e.touches[0].clientY;
+
+  const diffX = currentX - startX;
+  const diffY = currentY - startY;
+
+  // ONLY move card if horizontal swipe dominates
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+    card.style.transform = `
+      translateX(${diffX}px)
+      rotate(${diffX * 0.05}deg)
+    `;
+  }
+});
+
+card.addEventListener("touchend", () => {
+  dragging = false;
+
+  const diffX = currentX - startX;
+  const diffY = currentY - startY;
+
+  // 👉 PRIORITY: vertical swipe (flip)
+  if (Math.abs(diffY) > Math.abs(diffX) && diffY < -60) {
+  // swipe up animation
+  card.style.transition = "transform 0.2s ease";
+  card.style.transform = "translateY(-50px)";
 
   setTimeout(() => {
-    index = (index - 1 + cards.length) % cards.length;
-    showCard();
+    flipCard();
+    reset(true);
+  }, 150);
 
-    inner.classList.remove("spring-prev-out");
-    inner.classList.add("spring-prev-in");
-
-    setTimeout(() => {
-      inner.classList.remove("spring-prev-in");
-      animating = false;
-    }, 550);
-  }, 500);
+  return;
 }
 
-function showCard() {
-  if (cards.length === 0) return;
+  // 👉 horizontal swipe (navigation)
+  if (diffX > 80) {
+    swipeRight();
+  } else if (diffX < -80) {
+    swipeLeft();
+  } else {
+    reset();
+  }
+});
 
-  document.getElementById("front").textContent = cards[index].front;
-  document.getElementById("back").textContent = cards[index].back;
+/* DESKTOP */
+card.addEventListener("mousedown", e => {
+  startX = e.clientX;
+  dragging = true;
+});
 
-  flipped = false;
-  document.getElementById("inner").classList.remove("flipped");
+window.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  currentX = e.clientX;
+  let diff = currentX - startX;
+
+  card.style.transform = `translateX(${diff}px) rotate(${diff*0.05}deg)`;
+});
+
+window.addEventListener("mouseup", () => {
+  if (!dragging) return;
+  dragging = false;
+  let diff = currentX - startX;
+
+  if (diff > 100) swipeRight();
+  else if (diff < -100) swipeLeft();
+  else reset();
+});
+
+/* SWIPE ACTIONS */
+function swipeRight() {
+  card.style.transition = "transform 0.35s ease";
+  card.style.transform = "translateX(500px) rotate(15deg)";
+
+  setTimeout(() => {
+    nextCard();
+    reset(true);
+  }, 280);
 }
 
-function flipCard() {
-  if (animating) return;
-  flipped = !flipped;
-  document.getElementById("inner").classList.toggle("flipped", flipped);
+function swipeLeft() {
+  card.style.transition = "transform 0.35s ease";
+  card.style.transform = "translateX(-500px) rotate(-15deg)";
+
+  setTimeout(() => {
+    prevCard();
+    reset(true);
+  }, 280);
 }
 
-// CLICK TO FLIP
-document.getElementById("card").addEventListener("click", flipCard);
+function reset(skip=false) {
+  card.style.transition = skip ? "none" : "0.3s";
+  card.style.transform = "translateX(0) rotate(0)";
+}
 
-// KEYBOARD CONTROLS
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") nextCard();
-  if (e.key === "ArrowLeft") prevCard();
+/* LIGHTING */
+card.addEventListener("mousemove", e => {
+  const rect = card.getBoundingClientRect();
+  let x = (e.clientX - rect.left)/rect.width;
+  let y = (e.clientY - rect.top)/rect.height;
+
+  glare.style.opacity = 1;
+  glare.style.background = `radial-gradient(circle at ${x*100}% ${y*100}%, rgba(255,255,255,0.12), transparent 70%)`;
+});
+
+card.addEventListener("mouseleave", () => {
+  glare.style.opacity = 0;
+});
+
+/* KEYBOARD */
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") swipeLeft();
+  if (e.key === "ArrowLeft") swipeRight();
   if (e.key === " ") flipCard();
 });
 
-// START
+/* CLICK */
+card.addEventListener("click", flipCard);
+
+/* START */
 loadExcel();
 </script>
 
