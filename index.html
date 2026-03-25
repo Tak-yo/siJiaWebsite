@@ -8,7 +8,7 @@
 
 <style>
 body {
-  font-family: "Comic Sans MS", cursive;
+  font-family: "Comic Sans MS", sans-serif;
   background: #0f172a;
   color: white;
   display: flex;
@@ -21,7 +21,7 @@ body {
 /* TITLE */
 .title-img {
   margin: 40px auto 60px auto;
-  width: 350px;
+  width: 400px;
   max-width: 90%;
 }
 
@@ -29,7 +29,7 @@ body {
 .card {
   width: 400px;
   height: 250px;
-  perspective: 1400px;
+  perspective: 1200px;
   max-width: 90%;
   position: relative;
   transform-style: preserve-3d;
@@ -68,7 +68,7 @@ body {
 }
 
 .inner.flipped {
-  transform: rotateY(180deg);
+  transform: rotateX(180deg);
 }
 
 /* FACES */
@@ -93,7 +93,7 @@ body {
 
 .back {
   background: linear-gradient(145deg, #EDC001, #caa300);
-  transform: rotateY(180deg);
+  transform: rotateX(180deg);
 }
 
 /* TEXT */
@@ -108,10 +108,11 @@ body {
 .controls {
   margin-top: 20px;
   display: flex;
-  gap: 10px;
+  gap: 30px;
 }
 
 button {
+  font-family: "Comic Sans MS", sans-serif;
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
@@ -121,14 +122,36 @@ button {
 }
 
 button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
   background: #EDC001;
+}
+
+button:active {
+  transform: scale(0.9);
+}
+
+.icon-btn {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.2s ease;
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
 }
 </style>
 </head>
 
 <body>
 
-<img src="SJ Name Asset.png" class="title-img">
+<img src="titleIcon.png" class="title-img">
 
 <div class="card" id="card">
   <div class="stack stack-2"></div>
@@ -145,9 +168,12 @@ button:hover {
 </div>
 
 <div class="controls">
-  <button onclick="swipeRight()">←</button>
+  <img src="leftArrowIcon.png" class="icon-btn" onclick="swipeRight()">
+
   <button onclick="flipCard()">Flip</button>
-  <button onclick="swipeLeft()">→</button>
+
+  <img src="rightArrowIcon.png" class="icon-btn" onclick="swipeLeft()">
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
